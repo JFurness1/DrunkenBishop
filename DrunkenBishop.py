@@ -20,7 +20,7 @@ class Board:
         self.YDIM = ydim
         self.START = (self.XDIM//2, self.YDIM//2)
         self.title = title
-        
+
         self.clear_board()
         
     def clear_board(self):
@@ -52,10 +52,9 @@ class Board:
                     ostr += self.symbols[self.field[x, y]]
             ostr += "|\n"
         
-        ostr += "+" + "-"*(self.XDIM) + "+\n"
+        ostr += "+" + "-"*(self.XDIM) + "+"
         return ostr
 
-    
     def make_art(self, istr: str, do_md5:bool=True, is_hex:bool=False) -> str:
         self.i_string = istr
         if is_hex:
@@ -67,10 +66,8 @@ class Board:
         else:
             self.i_bytes = self.i_string.encode('utf-8')
         
-        
         bishop = list(self.START)  # copy the start position
         # Don't need to increment start as it will always be "S"
-        
         
         for byte in self.i_bytes:
             # Extract the pairs of bits from the byte into an array. 
@@ -100,5 +97,92 @@ class Board:
         
         return str(self)
 
-b = Board(title=" RSA 1024")
-print(b.make_art("fc94b0c1e5b0987c5843997697ee9fb7", is_hex=True))
+
+def test():
+    test_hash = "fc94b0c1e5b0987c5843997697ee9fb7"
+    print("test input:")
+    print(test_hash)
+
+    print("\nAs hex input:")
+    expected_hex = (
+        "+---[Test Hash]---+\n"
+        "|       .=o.  .   |\n"
+        "|     . *+*. o    |\n"
+        "|      =.*..o     |\n"
+        "|       o + ..    |\n"
+        "|        S o.     |\n"
+        "|         o  .    |\n"
+        "|          .  . . |\n"
+        "|              o .|\n"
+        "|               E.|\n"
+        "+-----------------+")
+    b = Board(title="Test Hash")
+    out_hex = b.make_art(test_hash, is_hex=True)
+    print_test_comparison(expected_hex, out_hex)
+    passed_hex = out_hex == expected_hex
+    if passed_hex:
+        print("TEST PASSED")
+    else:
+        print("TEST FAILED")
+
+    b.clear_board()
+
+    print("\nWith MD5 hash:")
+    expected_md5 = (
+        "+---[Test Hash]---+\n"
+        "|      . .        |\n"
+        "|     . = . .     |\n"
+        "|      o o . o    |\n"
+        "|       . . . .   |\n"
+        "|        S + .    |\n"
+        "|        E. +     |\n"
+        "|      .  .o      |\n"
+        "|    ..oo.o       |\n"
+        "|    +Bo=*..      |\n"
+        "+-----------------+")
+    out_md5 = b.make_art(test_hash, do_md5=True)
+    print_test_comparison(expected_md5, out_md5)
+    passed_md5 = out_md5 == expected_md5
+    if passed_md5:
+        print("TEST PASSED")
+    else:
+        print("TEST FAILED")
+
+    b.clear_board()
+    print("\nAs raw string:")
+    expected_raw = (
+        "+---[Test Hash]---+\n"
+        "|   o#XBoo.o.o.   |\n"
+        "|  o.#%Boooo.E    |\n"
+        "|   + Xo=oo = o   |\n"
+        "|     . o o       |\n"
+        "|        S        |\n"
+        "|       + o       |\n"
+        "|                 |\n"
+        "|                 |\n"
+        "|                 |\n"
+        "+-----------------+")
+    out_raw = b.make_art(test_hash, do_md5=False)
+    print_test_comparison(expected_raw, out_raw)
+    passed_raw = out_raw == expected_raw
+    if passed_raw:
+        print("TEST PASSED")
+    else:
+        print("TEST FAILED")
+
+    if passed_hex and passed_md5 and passed_raw:
+        print("\nALL TESTS PASSED! :)")
+    else:
+        print("\nSOME TESTS FAILED! :(")
+
+def print_test_comparison(expected, got):
+    expected_parts = expected.split("\n")
+    got_parts = got.split("\n")
+
+    fstr = "{{:^{0}}}    {{:^{0}}}".format(len(expected_parts[0]))
+    print(fstr.format("EXPECTED", "GOT"))
+    for i in range(len(expected_parts)):
+        print(fstr.format(expected_parts[i], got_parts[i]))
+
+if __name__ == "__main__":
+    test()
