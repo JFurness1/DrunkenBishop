@@ -49,7 +49,8 @@ class Board:
                 elif x == self.END[0] and y == self.END[1]:
                     ostr += self.END_SYMBOL
                 else:
-                    ostr += self.symbols[self.field[x, y]]
+                    # Note modulo to wrap symbols around for very long walks
+                    ostr += self.symbols[self.field[x, y] % len(self.symbols)]   
             ostr += "|\n"
         
         ostr += "+" + "-"*(self.XDIM) + "+"
